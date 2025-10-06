@@ -1,0 +1,40 @@
+# Define a variable to store the received data
+received_data = ""
+
+# Define a function to receive the streaming data
+def receive_data():
+  # Open a socket connection to receive data
+  socket_open("127.0.0.1", 65432)
+  
+  # Receive data from the socket
+  while True:
+    received_data = socket_read_ascii(1024)
+    
+    # Process the received data
+    process_received_data(received_data)
+
+# Define a function to process the received data
+def process_received_data(data):
+  # Split the received data into individual coordinates
+  coords_str = data.strip()
+  coords_list = coords_str.split(',')
+  
+  # Extract the coordinates and command
+  x, y, z, rx, ry, rz, command = coords_list
+  
+  # Convert the coordinates to floats
+  x, y, z, rx, ry, rz = float(x), float(y), float(z), float(rx), float(ry), float(rz)
+  
+  # Execute the command
+  if command == 'movej':
+    # Move the robot to the specified joint position
+    movej(x, y, z, rx, ry, rz)
+  elif command == 'movep':
+    # Move the robot to the specified pose
+    movep(x, y, z, rx, ry, rz)
+  else:
+    # Handle other commands as needed
+    print("Unknown command:", command)
+
+# Start the data receiving thread
+thread receive_data()
